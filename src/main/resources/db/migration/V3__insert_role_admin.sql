@@ -1,0 +1,2 @@
+INSERT INTO role (role_name) VALUES ('admin');
+INSERT INTO user_role (user_id, role_id) VALUES ((SELECT user_id  FROM users WHERE username = 'admin'), (SELECT role_id FROM role WHERE role_name = 'admin'));
