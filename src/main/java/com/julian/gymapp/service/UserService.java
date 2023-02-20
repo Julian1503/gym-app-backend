@@ -1,10 +1,9 @@
 package com.julian.gymapp.service;
 
-import com.julian.gymapp.dto.ConfigurationDto;
 import com.julian.gymapp.dto.UserDto;
 import com.julian.gymapp.domain.User;
-import com.julian.gymapp.error.ErrorBadUser;
-import com.julian.gymapp.error.ErrorBase;
+import com.julian.gymapp.exception.error.ErrorBadUser;
+import com.julian.gymapp.exception.error.ErrorBase;
 import com.julian.gymapp.response.ResponseBase;
 import com.julian.gymapp.repository.UserRepository;
 import io.vavr.control.Either;

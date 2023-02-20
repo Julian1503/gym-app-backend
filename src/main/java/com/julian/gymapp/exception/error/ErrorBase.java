@@ -1,4 +1,4 @@
-package com.julian.gymapp.error;
+package com.julian.gymapp.exception.error;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

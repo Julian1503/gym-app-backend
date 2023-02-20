@@ -1,6 +1,6 @@
 package com.julian.gymapp.exception;
 
-import com.julian.gymapp.error.ErrorBase;
+import com.julian.gymapp.exception.error.ErrorBase;
 import java.nio.file.AccessDeniedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

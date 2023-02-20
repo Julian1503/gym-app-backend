@@ -1,5 +1,6 @@
 package com.julian.gymapp.domain;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +25,8 @@ public class Configuration {
   private int timeFormat;
   @Column(name = "language", nullable = false)
   private int language;
-  @OneToOne()
+
+  @OneToOne(cascade = CascadeType.ALL)
   @JoinColumn(name = "user_id", referencedColumnName = "user_id")
   private User user;
 }

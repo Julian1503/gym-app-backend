@@ -1,4 +1,4 @@
-package com.julian.gymapp.error;
+package com.julian.gymapp.exception.error;
 
 public class ErrorBadUser extends ErrorBase {
   public ErrorBadUser(Long userId) {
