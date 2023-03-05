@@ -7,6 +7,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -28,11 +30,11 @@ public class Plan {
   @Column(name="name", nullable = false, length = 100)
   private String name;
 
-  @OneToMany(fetch = FetchType.LAZY)
+  @ManyToMany(mappedBy = "plans", fetch = FetchType.LAZY)
   private List<Trainer> trainer;
   @OneToMany(fetch = FetchType.LAZY)
   private List<DayPlan> dayPlans;
   @ManyToOne(fetch = FetchType.LAZY)
-  @JoinColumn(name="person_id", nullable = false)
+  @JoinColumn(name="member_id", nullable = false)
   private Member member;
 }

@@ -3,6 +3,8 @@ package com.julian.gymapp.domain;
 import com.julian.gymapp.domain.enums.MuscleGroup;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -29,6 +31,7 @@ public class Exercise {
   @Column(name="description", nullable = false, length = 500)
   private String description;
   @Column(name="muscle_group", nullable = false)
+  @Enumerated(EnumType.STRING)
   private MuscleGroup muscleGroup;
   @Column(name="difficulty_level", nullable = false, precision = 3)
   private Short difficultyLevel;

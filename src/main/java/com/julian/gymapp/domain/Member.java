@@ -6,7 +6,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 import java.util.Date;
 import java.util.List;
@@ -19,11 +23,8 @@ import lombok.NoArgsConstructor;
 @Table(name="member")
 @NoArgsConstructor
 @AllArgsConstructor
+@PrimaryKeyJoinColumn(name = "person_id")
 public class Member extends Person {
-  @Id
-  @Column(name="person_id", nullable = false)
-  @GeneratedValue(strategy = GenerationType.AUTO)
-  private Long personId;
   @Column(name="member_number", nullable = false)
   private String memberNumber;
   @Column(name="join_date", nullable = false)
@@ -34,7 +35,13 @@ public class Member extends Person {
   private String emergencyContactPhone;
 
   @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "membership_subscription",
+      joinColumns = @JoinColumn(name = "member_id"),
+      inverseJoinColumns = @JoinColumn(name = "membership_subscription_id"))
   private List<MembershipSubscription> membershipSubscriptions;
   @OneToMany(fetch = FetchType.LAZY)
+  @JoinTable(name = "plan",
+      joinColumns = @JoinColumn(name = "member_id"),
+      inverseJoinColumns = @JoinColumn(name = "plan_id"))
   private List<Plan> plans;
 }

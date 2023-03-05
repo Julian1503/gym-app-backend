@@ -19,13 +19,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MembershipSubscription {
   @Id
+  @Column(name="membership_subscription_id")
   private Long membershipSubscriptionId;
-  @Column(name="subscription_start")
+  @Column(name="start_date")
   private Date subscriptionStart;
-  @Column(name="subscription_expires")
+  @Column(name="end_date")
   private Date subscriptionExpires;
   @Column(name="expired", columnDefinition = "boolean default false")
   private boolean expired;
+  @Column(name="amount")
+  private Short amount;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "member_id", nullable = false)

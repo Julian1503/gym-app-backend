@@ -1,13 +1,3 @@
-CREATE TYPE DayOfWeek AS ENUM ('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday');
-
-CREATE TYPE EquipmentType AS ENUM ('Barbell', 'Dumbbell', 'Machine', 'Cable', 'Bodyweight');
-
-CREATE TYPE GenderType AS ENUM ('Male', 'Female', 'Other');
-
-CREATE TYPE IdentifierType AS ENUM ('Passport', 'National ID', 'Driver License');
-
-CREATE TYPE MuscleGroupType AS ENUM ('Chest', 'Back', 'Shoulders', 'Arms', 'Legs', 'Core', 'Other');
-
 CREATE TABLE IF NOT EXISTS person (
                         person_id SERIAL PRIMARY KEY,
                         "name" VARCHAR(50) NOT NULL,
@@ -22,7 +12,8 @@ CREATE TABLE IF NOT EXISTS person (
                         floor VARCHAR(4),
                         door VARCHAR(2),
                         gender GenderType NOT NULL,
-                        birth_date DATE NOT NULL
+                        birth_date DATE NOT NULL,
+    CONSTRAINT unique_identifier UNIQUE (identifier)
 );
 
 CREATE TABLE IF NOT EXISTS exercise (exercise_id SERIAL PRIMARY KEY,
@@ -34,12 +25,7 @@ CREATE TABLE IF NOT EXISTS exercise (exercise_id SERIAL PRIMARY KEY,
 
 
 
-CREATE TABLE IF NOT EXISTS plan (
-                                    plan_id SERIAL PRIMARY KEY,
-                                    name VARCHAR(100) NOT NULL,
-    description VARCHAR(200),
-    photo BYTEA
-    );
+
 
 CREATE TABLE IF NOT EXISTS specialty (
                            specialty_id SERIAL PRIMARY KEY,
@@ -64,21 +50,34 @@ CREATE TABLE IF NOT EXISTS membership (membership_id SERIAL PRIMARY KEY,
 
 
 CREATE TABLE IF NOT EXISTS trainer (
-                         person_id SERIAL PRIMARY KEY,
+                         trainer_id SERIAL PRIMARY KEY,
                          trainer_number VARCHAR(20),
                          date_hired DATE,
                          active BOOLEAN DEFAULT true,
-                         FOREIGN KEY (person_id) REFERENCES person (person_id)
+                        person_id INTEGER NOT NULL,
+                         FOREIGN KEY (person_id) REFERENCES person (person_id),
+    CONSTRAINT trainer_person_id_unique UNIQUE (person_id)
 );
 
 CREATE TABLE IF NOT EXISTS member (
-                                      person_id SERIAL PRIMARY KEY,
+                                      member_id SERIAL PRIMARY KEY,
                                       member_number VARCHAR(20) NOT NULL UNIQUE,
     join_date DATE NOT NULL,
     emergency_contact_name VARCHAR(70),
     emergency_contact_phone VARCHAR(15),
-    FOREIGN KEY (person_id) REFERENCES person (person_id)
+    person_id INTEGER NOT NULL,
+    FOREIGN KEY (person_id) REFERENCES person (person_id),
+    CONSTRAINT member_person_id_unique UNIQUE (person_id)
 );
+
+CREATE TABLE IF NOT EXISTS plan (
+                                    plan_id SERIAL PRIMARY KEY,
+                                    name VARCHAR(100) NOT NULL,
+    description VARCHAR(200),
+    photo BYTEA,
+    member_id BIGINT,
+    FOREIGN KEY (member_id) REFERENCES member (person_id)
+    );
 
 CREATE TABLE IF NOT EXISTS day_plan (day_plan_id SERIAL PRIMARY KEY,
                                      day_name DayOfWeek NOT NULL,
@@ -130,3 +129,20 @@ CREATE TABLE IF NOT EXISTS step (step_id SERIAL PRIMARY KEY,
                                     description VARCHAR(500) NOT NULL,
                                     exercise_id INTEGER NOT NULL,
                                     FOREIGN KEY (exercise_id) REFERENCES exercise (exercise_id));
+CREATE TABLE IF NOT EXISTS trainer_specialty (
+                                   trainer_specialty_id SERIAL PRIMARY KEY,
+                                   trainer_id BIGINT NOT NULL REFERENCES trainer(person_id),
+                                   specialty_id BIGINT NOT NULL REFERENCES specialty(specialty_id)
+);
+
+CREATE TABLE IF NOT EXISTS trainer_plan (
+                              trainer_id bigint NOT NULL,
+                              plan_id bigint NOT NULL,
+                              PRIMARY KEY (trainer_id, plan_id),
+                              CONSTRAINT fk_trainer
+                                  FOREIGN KEY (trainer_id)
+                                      REFERENCES trainer(person_id),
+                              CONSTRAINT fk_plan
+                                  FOREIGN KEY (plan_id)
+                                      REFERENCES plan(plan_id)
+);
