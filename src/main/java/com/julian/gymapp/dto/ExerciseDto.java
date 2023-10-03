@@ -37,12 +37,7 @@ public class ExerciseDto {
   @NotEmpty(message = "Steps cannot be empty")
   private List<StepDto> steps;
 
-  @NotEmpty(message = "Specialties cannot be empty")
-  private List<ExerciseSpecialtyDto> specialties;
+  private List<SpecialtyDto> specialties;
 
-  @NotEmpty(message = "Equipment list cannot be empty")
-  private List<EquipmentDto> equipmentList;
-
-  @NotEmpty(message = "Exercise day plans cannot be empty")
-  private List<ExerciseDayPlanDto> exerciseDayPlans;
+  private List<EquipmentDto> equipments;
 }

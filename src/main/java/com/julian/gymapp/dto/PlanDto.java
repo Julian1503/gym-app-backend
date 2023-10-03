@@ -18,8 +18,7 @@ public class PlanDto {
   @NotEmpty(message = "Trainer list cannot be empty")
   private List<TrainerDto> trainers;
 
-  @NotEmpty(message = "Day plan list cannot be empty")
-  private List<DayPlanDto> dayPlans;
+  private List<ExerciseDayPlanDto> dayPlans;
 
   @NotNull(message = "Member ID cannot be null")
   private Long memberId;

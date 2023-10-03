@@ -14,12 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EquipmentDto {
-  @NotNull
-  @NotBlank
+  @NotNull(message = "Name must not be null")
+  @NotBlank(message = "Name must not be blank")
   @Size(max = 80)
   private String name;
 
-  @NotNull
+  @NotNull(message = "Type must not be null")
   private EquipmentType type;
 
   @Min(value = 0, message = "Quantity cannot be negative")
@@ -27,5 +27,5 @@ public class EquipmentDto {
   private Short quantity;
 
   @NotNull
-  private Long exerciseId;
+  private Long equipmentId;
 }

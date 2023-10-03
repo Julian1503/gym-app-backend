@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatus;
 @JsonInclude(Include.NON_NULL)
 public class BaseResponse {
   private Object response;
-  private HttpStatus status = HttpStatus.OK;
+  private int status = 200;
   private String message;
   private boolean success = true;
   private List<String> errorResponse;

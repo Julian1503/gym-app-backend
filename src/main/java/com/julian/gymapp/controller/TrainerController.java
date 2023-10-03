@@ -3,9 +3,11 @@ package com.julian.gymapp.controller;
 import com.julian.gymapp.controller.response.BaseResponse;
 import com.julian.gymapp.domain.Trainer;
 import com.julian.gymapp.dto.TrainerDto;
-import com.julian.gymapp.service.IBasicCrud;
+import com.julian.gymapp.service.interfaces.IBasicCrud;
+import com.julian.gymapp.service.interfaces.ModelConfig;
 import jakarta.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,109 +22,86 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequestMapping("/api/trainer")
-public class TrainerController {
+public class TrainerController extends BaseController {
 
   private final IBasicCrud<Trainer, Long> trainerRepository;
   private final ModelMapper mapper;
-
-  public TrainerController(IBasicCrud<Trainer, Long> trainerRepository, ModelMapper mapper) {
+  public TrainerController(IBasicCrud<Trainer, Long> trainerRepository, ModelConfig mapper) {
     this.trainerRepository = trainerRepository;
-    this.mapper = mapper;
+    this.mapper = mapper.getModelMapper();
   }
 
   @GetMapping("/get-all")
   public ResponseEntity<BaseResponse> getAllTrainers() {
-    BaseResponse baseResponse = new BaseResponse();
+    ResponseEntity<BaseResponse> baseResponse;
     try {
       List<Trainer> trainers = trainerRepository.findAll();
-      baseResponse.setResponse(trainers);
-      baseResponse.setMessage("Trainers returned successfully");
+      baseResponse = createSuccessResponse(convertToDto(trainers), "Trainers returned successfully");
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage("Something went bad");
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    return baseResponse;
   }
 
   @GetMapping("/get/{id}")
   public ResponseEntity<BaseResponse> getById(@PathVariable Long id) {
-    BaseResponse baseResponse = new BaseResponse();
+    ResponseEntity<BaseResponse> baseResponse;
     try {
       Trainer trainer = trainerRepository.findById(id);
-      if(trainer == null) {
-        baseResponse.setMessage("Trainer was not found");
-        baseResponse.setSuccess(false);
+      if (trainer == null) {
+        baseResponse = createErrorResponse("Trainer was not found");
       } else {
-        baseResponse.setResponse(trainer);
-        baseResponse.setMessage("Trainer returned successfully");
+        baseResponse = createSuccessResponse(convertToDto(trainer), "Trainer returned successfully");
       }
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage(e.getMessage());
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    return baseResponse;
   }
 
-  @PostMapping("create")
+  @PostMapping("/create")
   public ResponseEntity<BaseResponse> createTrainer(@Valid @RequestBody TrainerDto trainerDto) {
-    BaseResponse baseResponse = new BaseResponse();
+    ResponseEntity<BaseResponse> baseResponse;
     try {
       Trainer trainer = mapper.map(trainerDto, Trainer.class);
-      trainerRepository.save(trainer);
-      baseResponse.setResponse(trainer);
-      baseResponse.setMessage("Trainer was created successfully");
+      Trainer savedTrainer = trainerRepository.save(trainer);
+      baseResponse = createSuccessResponse(convertToDto(savedTrainer), "Trainer was created successfully");
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage(e.getMessage());
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    return baseResponse;
   }
 
-  @PutMapping("update/{id}")
+  @PutMapping("/update/{id}")
   public ResponseEntity<BaseResponse> updateTrainer(@Valid @RequestBody TrainerDto trainerDto, @PathVariable Long id) {
-    BaseResponse baseResponse = new BaseResponse();
+    ResponseEntity<BaseResponse> baseResponse;
     try {
       Trainer trainer = mapper.map(trainerDto, Trainer.class);
-      Trainer trainerUpdated = trainerRepository.update(trainer, id);
-      baseResponse.setResponse(trainerUpdated);
-      baseResponse.setMessage("Trainer was updated successfully");
+      Trainer updatedTrainer = trainerRepository.update(trainer, id);
+      baseResponse = createSuccessResponse(convertToDto(updatedTrainer), "Trainer was updated successfully");
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage(e.getMessage());
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    return baseResponse;
   }
 
-  @DeleteMapping("delete")
-  public ResponseEntity<BaseResponse> deleteTrainer(@Valid @RequestBody TrainerDto trainerDto) {
-    BaseResponse baseResponse = new BaseResponse();
-    try {
-      Trainer trainer = mapper.map(trainerDto, Trainer.class);
-      trainerRepository.delete(trainer);
-      baseResponse.setMessage("Trainer was deleted successfully");
-    } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage(e.getMessage());
-    }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
-  }
-
-  @DeleteMapping("delete/{id}")
+  @DeleteMapping("/delete/{id}")
   public ResponseEntity<BaseResponse> deleteTrainer(@PathVariable Long id) {
-    BaseResponse baseResponse = new BaseResponse();
+    ResponseEntity<BaseResponse> baseResponse;
     try {
       trainerRepository.deleteById(id);
-      baseResponse.setMessage("Trainer was deleted successfully");
+      baseResponse = createSuccessResponse(null, "Trainer was deleted successfully");
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
-      baseResponse.setSuccess(false);
-      baseResponse.setMessage(e.getMessage());
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
+    return baseResponse;
+  }
+
+  private TrainerDto convertToDto(Trainer trainer) {
+    return mapper.map(trainer, TrainerDto.class);
+  }
+
+  private List<TrainerDto> convertToDto(List<Trainer> trainers) {
+    return trainers.stream().map(this::convertToDto).collect(Collectors.toList());
   }
 }

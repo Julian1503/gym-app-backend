@@ -1,0 +1,1 @@
+ALTER TABLE users ADD COLUMN person_id INTEGER REFERENCES person(person_id)

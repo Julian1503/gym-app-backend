@@ -22,21 +22,5 @@ public class MembershipDto {
   @Min(value = 1, message = "Days must be at least 1")
   @Max(value = 9999, message = "Days cannot exceed 9999")
   private Short days;
-
-  private Byte[] photo;
-
-  @NotEmpty(message = "Membership element list cannot be empty")
-  private List<MembershipElementDto> membershipElement;
-
-  public Double getPrice() {
-    return calculatePrice();
-  }
-
-  public double calculatePrice() {
-    double totalCost = 0;
-    for (MembershipElementDto element : membershipElement) {
-      totalCost += element.getCost();
-    }
-    return totalCost;
-  }
+  private Double price;
 }

@@ -1,17 +1,23 @@
 package com.julian.gymapp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
+import java.sql.Date;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.sql.Time;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ExerciseDayPlanDto {
 
   private Long exercisesDayPlanId;
@@ -33,15 +39,19 @@ public class ExerciseDayPlanDto {
 
   private boolean warmup;
 
-  private boolean finished;
+  private boolean isFinished;
+
+  private String exerciseName;
 
   @Min(value = 0, message = "Weight must be a positive number or zero")
   private Double weight;
 
-  @NotNull(message = "Exercise cannot be null")
   private Long exerciseId;
 
-  @NotNull(message = "Day plan cannot be null")
-  private Long dayPlanId;
+  @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
+  private LocalDate day;
 
+  private String exerciseDescription;
+
+  private Long planId;
 }

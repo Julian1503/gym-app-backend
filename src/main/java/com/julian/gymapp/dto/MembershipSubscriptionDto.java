@@ -1,8 +1,11 @@
 package com.julian.gymapp.dto;
 
 import jakarta.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Data
 public class MembershipSubscriptionDto {
@@ -10,18 +13,19 @@ public class MembershipSubscriptionDto {
   private Long membershipSubscriptionId;
 
   @NotNull(message = "Subscription start date is required")
-  private Date subscriptionStart;
+  @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
+  private LocalDate subscriptionStart;
 
   @NotNull(message = "Subscription expiration date is required")
-  private Date subscriptionExpires;
+  @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
+  private LocalDate subscriptionExpires;
 
   private boolean expired;
 
-  @NotNull(message = "Member is required")
-  private MemberDto member;
+  private Long memberId;
 
-  @NotNull(message = "Membership is required")
-  private MembershipDto membership;
+  private Long membershipId;
 
   private DiscountDto discount;
+  private Short amount;
 }

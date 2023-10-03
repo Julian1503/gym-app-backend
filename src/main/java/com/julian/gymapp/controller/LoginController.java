@@ -3,7 +3,7 @@ package com.julian.gymapp.controller;
 import com.julian.gymapp.controller.response.BaseResponse;
 import com.julian.gymapp.dto.AuthDto;
 import com.julian.gymapp.model.LoginRequest;
-import com.julian.gymapp.service.ISecurityService;
+import com.julian.gymapp.service.interfaces.ISecurityService;
 import java.util.Map;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class LoginController {
 
   private final ISecurityService securityService;
   private final AuthenticationManager authorizationManager;
-  @PostMapping("/login")
+  @PostMapping("")
   public ResponseEntity<BaseResponse> token(@RequestBody LoginRequest loginRequest) {
     BaseResponse baseResponse = new BaseResponse();
     try {
@@ -36,9 +36,9 @@ public class LoginController {
       baseResponse.setResponse(authDto);
       baseResponse.setMessage("Authenticated successfully");
     } catch (Exception e) {
-      baseResponse.setStatus(HttpStatus.BAD_GATEWAY);
+      baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
       baseResponse.setSuccess(false);
-      baseResponse.setMessage("Something went bad");
+      baseResponse.setMessage(e.getLocalizedMessage());
     }
     return new ResponseEntity<>(baseResponse, HttpStatus.OK);
   }

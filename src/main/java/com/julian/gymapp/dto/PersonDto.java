@@ -6,11 +6,15 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Size;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.format.annotation.DateTimeFormat.ISO;
 
 @Data
-public abstract class PersonDto {
+public class PersonDto {
+  private Long personId;
   @Size(max = 50, message = "name must be between 0 and 50 characters")
   @NotBlank(message = "name can not be blank")
   @NotNull(message = "name can not be null")
@@ -39,5 +43,6 @@ public abstract class PersonDto {
   private Gender gender;
   @NotNull(message = "birth date can not be null")
   @Past(message = "birth date can not be a future or present date")
-  private Date birthDate;
+  @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
+  private LocalDate birthDate;
 }

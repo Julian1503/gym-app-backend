@@ -33,14 +33,9 @@ public class Trainer extends Person {
   @Column(name="date_hired", nullable = false)
   private Date hireDate;
 
-  @OneToMany(fetch = FetchType.LAZY)
+  @ManyToMany(fetch = FetchType.LAZY)
   @JoinTable(name = "trainer_specialty",
       joinColumns = @JoinColumn(name = "trainer_id"),
-      inverseJoinColumns = @JoinColumn(name = "trainer_specialty_id"))
-  private List<TrainerSpecialty> specialties;
-  @ManyToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "trainer_plan",
-      joinColumns = @JoinColumn(name = "trainer_id"),
-      inverseJoinColumns = @JoinColumn(name = "plan_id"))
-  private List<Plan> plans;
+      inverseJoinColumns = @JoinColumn(name = "specialty_id"))
+  private List<Specialty> specialties;
 }

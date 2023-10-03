@@ -33,10 +33,10 @@ public abstract class PersonService {
       String identity = entity.getIdentifier();
       if(StringUtils.isBlank(identity)) throw new IllegalArgumentException("Identity cannot be empty");
     }
-
-    if(personRepository.existsByIdentifier(entity.getIdentifier())) {
-      throw new IllegalArgumentException("Identifier must be unique");
-    }
+//
+//    if(personRepository.existsByIdentifier(entity.getIdentifier())) {
+//      throw new IllegalArgumentException("Identifier must be unique");
+//    }
 
     if (entity.getGender() == null) {
       throw new IllegalArgumentException("Gender cannot be null");

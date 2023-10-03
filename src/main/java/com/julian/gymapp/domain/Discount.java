@@ -29,6 +29,8 @@ public class Discount {
   private String code;
   @Column(name="expired", nullable = false, columnDefinition = "boolean default false")
   private boolean expired;
+  @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+  private boolean isDeleted;
 
   @OneToMany(fetch = FetchType.LAZY)
   private List<MembershipSubscription> membershipSubscriptions;

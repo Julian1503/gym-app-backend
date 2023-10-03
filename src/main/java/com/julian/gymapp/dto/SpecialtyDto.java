@@ -10,7 +10,7 @@ public class SpecialtyDto {
   @NotBlank(message = "Name is mandatory")
   @Size(max = 100, message = "Name can have a maximum of 100 characters")
   private String name;
-  @Size(max = 200, message = "Description can have a maximum of 200 characters")
+  @Size(max = 500, message = "Description can have a maximum of 500 characters")
   private String description;
   private Byte[] photo;
 }

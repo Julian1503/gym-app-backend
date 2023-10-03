@@ -2,6 +2,7 @@ package com.julian.gymapp.service;
 
 import com.julian.gymapp.domain.Trainer;
 import com.julian.gymapp.repository.TrainerRepository;
+import com.julian.gymapp.service.interfaces.IBasicCrud;
 import io.micrometer.common.util.StringUtils;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
@@ -19,12 +20,12 @@ public class TrainerService extends PersonService implements IBasicCrud<Trainer,
   }
   @Override
   public List<Trainer> findAll() {
-    return trainerRepository.findAll();
+    return trainerRepository.findAllByIsDeletedFalse();
   }
 
   @Override
   public Trainer findById(Long id) {
-    Optional<Trainer> trainer = trainerRepository.findById(id);
+    Optional<Trainer> trainer = trainerRepository.findByPersonIdAndIsDeletedFalse(id);
     return trainer.orElse(null);
   }
 
@@ -41,31 +42,21 @@ public class TrainerService extends PersonService implements IBasicCrud<Trainer,
 
   @Override
   public Trainer update(Trainer entity, Long id) {
-    Trainer trainer = trainerRepository.findById(id).orElseThrow(() -> new EntityNotFoundException(
+    Trainer trainer = trainerRepository.findByPersonIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException(
         TRAINER_NOT_FOUND));
     update(entity, trainer);
+    trainer.setSpecialties(entity.getSpecialties());
     validateTrainer(trainer);
     return trainerRepository.save(trainer);
   }
 
   @Override
-  public void delete(Trainer trainerToDelete) {
-    if (StringUtils.isBlank(trainerToDelete.getTrainerNumber())) {
-      throw new IllegalArgumentException("trainer number cannot be blank");
-    }
-   Optional<Trainer> trainer = trainerRepository.findTrainerByTrainerNumber(trainerToDelete.getTrainerNumber());
-   if(trainer.isPresent()) {
-     trainerRepository.delete(trainer.get());
-   } else {
-     throw new IllegalArgumentException(TRAINER_NOT_FOUND);
-   }
-  }
-
-  @Override
   public void deleteById(Long id) {
-    Optional<Trainer> trainer = trainerRepository.findById(id);
+    Optional<Trainer> trainer = trainerRepository.findByPersonIdAndIsDeletedFalse(id);
     if(trainer.isPresent()) {
-      trainerRepository.deleteById(id);
+      Trainer trainerEntity = trainer.get();
+      trainerEntity.setDeleted(true);
+      trainerRepository.save(trainerEntity);
     } else {
       throw new IllegalArgumentException(TRAINER_NOT_FOUND);
     }
