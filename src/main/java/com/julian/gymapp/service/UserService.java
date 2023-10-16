@@ -8,6 +8,7 @@ import com.julian.gymapp.exception.error.ErrorBase;
 import com.julian.gymapp.repository.RolesRepository;
 import com.julian.gymapp.response.ResponseBase;
 import com.julian.gymapp.repository.UserRepository;
+import com.julian.gymapp.security.SpringCrypto;
 import com.julian.gymapp.service.interfaces.IConfigurationService;
 import com.julian.gymapp.service.interfaces.IUserService;
 import io.vavr.control.Either;
@@ -64,10 +65,18 @@ public class UserService implements IUserService {
       throw new IllegalArgumentException("The username must be unique");
     }
 
+    if(!user.getEmail().matches("^(.+)@(.+)$")) {
+      throw new IllegalArgumentException("Wrong email format");
+    }
+
+    if(user.getPassword().isBlank() && user.getPassword().isEmpty()) {
+      throw new IllegalArgumentException("Password cannot be empty");
+    }
+
     validatePassword(user.getPassword());
   }
 
   private void validatePassword(String password) {
-    if(!password.matches("^(?=.*[A-Z].*[A-Z])(?=.*[!@#$&*])(?=.*\\d.*\\d)(?=.*[a-z].*[a-z].*[a-z]).{8}$")) throw new IllegalArgumentException("Wrong Password Format");
+    if(!SpringCrypto.decrypt(password).matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[^\\w\\d\\s]).{8,}$")) throw new IllegalArgumentException("Wrong Password Format");
   }
 }

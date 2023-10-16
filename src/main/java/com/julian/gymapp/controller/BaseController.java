@@ -8,6 +8,7 @@ public class BaseController {
   protected ResponseEntity<BaseResponse> createSuccessResponse(Object response, String message) {
     BaseResponse baseResponse = new BaseResponse();
     baseResponse.setResponse(response);
+    baseResponse.setStatus(200);
     baseResponse.setMessage(message);
     return ResponseEntity.ok(baseResponse);
   }

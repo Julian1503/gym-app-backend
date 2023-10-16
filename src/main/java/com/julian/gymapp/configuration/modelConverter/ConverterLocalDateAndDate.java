@@ -11,6 +11,7 @@ public class ConverterLocalDateAndDate implements Converter<LocalDate, Date> {
   public Date convert(MappingContext<LocalDate, Date> mappingContext) {
     LocalDate source = mappingContext.getSource();
     try {
+      if(source == null) return null;
       return java.sql.Date.valueOf(source);
     } catch (NumberFormatException e) {
       System.out.println("Error converting date: " + e.getMessage());

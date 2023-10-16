@@ -12,8 +12,10 @@ public class ConverterDateAndLocalDate implements Converter<Date, LocalDate> {
   public LocalDate convert(MappingContext<Date, LocalDate> mappingContext) {
     Date source = mappingContext.getSource();
     try {
-      Instant instant = source.toInstant();
-      return instant.atZone(ZoneId.systemDefault()).toLocalDate();
+      if(source != null) {
+        Instant instant = source.toInstant();
+        return instant.atZone(ZoneId.systemDefault()).toLocalDate();
+      }
     } catch (NumberFormatException e) {
       System.out.println("Error converting date: " + e.getMessage());
     }
