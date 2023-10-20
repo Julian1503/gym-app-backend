@@ -60,6 +60,8 @@ public class SecurityService implements ISecurityService, UserDetailsService {
             .map(GrantedAuthority::getAuthority).toList())
         .claim("email", user.getEmail())
         .claim("scid", user.getUser() != null ? user.getUser().getPersonId() : "")
+        .claim("user", user.getUser() != null ? user.getUserId() : "")
+        .claim("fullName", user.getUser() != null ? user.getUser().getName() +" "+ user.getUser().getLastName() : "")
         .claims(claims)
         .build();
     return this.encoder.encode(JwtEncoderParameters.from(claimsJwt)).getTokenValue();

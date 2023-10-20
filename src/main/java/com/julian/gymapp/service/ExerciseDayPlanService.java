@@ -1,9 +1,10 @@
 package com.julian.gymapp.service;
 
 import com.julian.gymapp.domain.ExerciseDayPlan;
+import com.julian.gymapp.domain.SeriesRegister;
 import com.julian.gymapp.repository.ExerciseDayPlanRepository;
 import com.julian.gymapp.repository.IExerciseDayPlanRepository;
-import com.julian.gymapp.service.interfaces.IBasicCrud;
+import com.julian.gymapp.repository.SeriesRegisterRepository;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +15,12 @@ public class ExerciseDayPlanService implements
     IExerciseDayPlanRepository {
 
   private final ExerciseDayPlanRepository exerciseDayPlanRepository;
+  private final SeriesRegisterRepository seriesRegisterRepository;
 
-  public ExerciseDayPlanService(ExerciseDayPlanRepository exerciseDayPlanRepository) {
+  public ExerciseDayPlanService(ExerciseDayPlanRepository exerciseDayPlanRepository,
+      SeriesRegisterRepository seriesRegisterRepository) {
     this.exerciseDayPlanRepository = exerciseDayPlanRepository;
+    this.seriesRegisterRepository = seriesRegisterRepository;
   }
 
   @Override
@@ -31,10 +35,23 @@ public class ExerciseDayPlanService implements
   }
 
   @Override
-  public void finishExercise(Long id) {
+  public void finishExercise(Long id, List<SeriesRegister> seriesRegisters) {
     ExerciseDayPlan exerciseDayPlan = exerciseDayPlanRepository.findByExercisesDayPlanIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException("ExerciseDayPlan was not found"));
-    exerciseDayPlan.setFinished(!exerciseDayPlan.isFinished());
+    exerciseDayPlan.setFinished(true);
     exerciseDayPlanRepository.save(exerciseDayPlan);
+    seriesRegisterRepository.saveAll(seriesRegisters);
+  }
+
+  @Override
+  public void restartExercise(Long id) {
+    ExerciseDayPlan exerciseDayPlan = exerciseDayPlanRepository.findByExercisesDayPlanIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException("ExerciseDayPlan was not found"));
+    exerciseDayPlan.setFinished(false);
+    exerciseDayPlanRepository.save(exerciseDayPlan);
+    List<SeriesRegister> seriesRegisters = seriesRegisterRepository.findByExercisesDayPlanIdAndIsDeletedFalse(exerciseDayPlan.getExercisesDayPlanId());
+    seriesRegisters.forEach(seriesRegister -> {
+      seriesRegister.setDeleted(true);
+    });
+    seriesRegisterRepository.saveAll(seriesRegisters);
   }
 
   @Override
@@ -50,13 +67,9 @@ public class ExerciseDayPlanService implements
   public ExerciseDayPlan update(ExerciseDayPlan entity, Long id) {
     ExerciseDayPlan exerciseDayPlan = exerciseDayPlanRepository.findByExercisesDayPlanIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException("ExerciseDayPlan was not found"));
     validateExerciseDayPlan(exerciseDayPlan);
-    exerciseDayPlan.setWeight(entity.getWeight());
     exerciseDayPlan.setDay(entity.getDay());
     exerciseDayPlan.setExercise(entity.getExercise());
-    exerciseDayPlan.setRepetitions(entity.getRepetitions());
-    exerciseDayPlan.setSeries(entity.getSeries());
     exerciseDayPlan.setWarmup(entity.isWarmup());
-    exerciseDayPlan.setDuration(entity.getDuration());
     return exerciseDayPlanRepository.save(exerciseDayPlan);
   }
 

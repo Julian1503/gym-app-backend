@@ -8,7 +8,8 @@ import io.vavr.control.Either;
 import java.util.List;
 
 public interface IUserService {
-  void changePassword(String password, Long userId);
+  void changePassword(String newPassword, String oldPassword, Long userId);
   UserDto updateUser(UserDto userDto, Long userId);
   User createUser(User userEntity, List<String> roles);
+  List<User> getAllUsers();
 }

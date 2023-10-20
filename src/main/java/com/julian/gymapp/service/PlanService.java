@@ -85,4 +85,12 @@ public class PlanService implements IPlanService {
   public Plan findActivePlan(Long memberId) {
     return planRepository.findByIsActiveTrueAndIsDeletedFalseAndMemberId(memberId).orElse(null);
   }
+
+  @Override
+  public Plan activatePlan(Long id) {
+    Plan plan = planRepository.findByPlanIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException("Plan was not found"));
+    planRepository.updateIsActiveByMemberId(false, plan.getMemberId());
+    plan.setActive(true);
+    return planRepository.save(plan);
+  }
 }

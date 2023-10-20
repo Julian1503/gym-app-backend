@@ -5,6 +5,7 @@ import com.julian.gymapp.dto.UserDto;
 import com.julian.gymapp.domain.User;
 import com.julian.gymapp.exception.error.ErrorBadUser;
 import com.julian.gymapp.exception.error.ErrorBase;
+import com.julian.gymapp.repository.MemberRepository;
 import com.julian.gymapp.repository.RolesRepository;
 import com.julian.gymapp.response.ResponseBase;
 import com.julian.gymapp.repository.UserRepository;
@@ -27,6 +28,7 @@ public class UserService implements IUserService {
 
   private final UserRepository userRepository;
   private final RolesRepository rolesRepository;
+  private final MemberRepository memberRepository;
 
   private final ModelMapper modelMapper;
 
@@ -41,6 +43,11 @@ public class UserService implements IUserService {
     return userRepository.save(userEntity);
   }
 
+  @Override
+  public List<User> getAllUsers() {
+    return userRepository.findAll();
+  }
+
   @Transactional
   @Modifying
   public UserDto updateUser(UserDto userDto, Long userId) {
@@ -52,17 +59,26 @@ public class UserService implements IUserService {
 
   @Transactional
   @Modifying
-  public void changePassword(String password, Long userId) {
-    validatePassword(password);
+  public void changePassword(String newPassword, String oldPassword, Long userId) {
+    validatePassword(newPassword);
     User userEntity = userRepository.getReferenceById(userId);
     if(userEntity == null) throw new IllegalArgumentException("User not found");
-    userEntity.setPassword(password);
+    if(!SpringCrypto.decrypt(userEntity.getPassword()).equals(oldPassword)) throw new IllegalArgumentException("Wrong password");
+    userEntity.setPassword(newPassword);
     userRepository.save(userEntity);
   }
 
   private void validateUser(User user) {
     if(userRepository.existsByUsername(user.getUsername())) {
       throw new IllegalArgumentException("The username must be unique");
+    }
+
+    if(userRepository.existsByEmail(user.getEmail())) {
+      throw new IllegalArgumentException("The email must be unique");
+    }
+
+    if(memberRepository.hasUser(user.getUser().getPersonId())) {
+      throw new IllegalArgumentException("There is already a user for this member");
     }
 
     if(!user.getEmail().matches("^(.+)@(.+)$")) {
@@ -77,6 +93,6 @@ public class UserService implements IUserService {
   }
 
   private void validatePassword(String password) {
-    if(!SpringCrypto.decrypt(password).matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[^\\w\\d\\s]).{8,}$")) throw new IllegalArgumentException("Wrong Password Format");
+    if(!password.matches("^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=.*[^\\w\\d\\s]).{8,}$")) throw new IllegalArgumentException("Wrong Password Format");
   }
 }

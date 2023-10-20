@@ -30,8 +30,7 @@ public class ExerciseDto {
   @Max(value = 999, message = "Difficulty level cannot exceed 999")
   private Short difficultyLevel;
 
-  @Lob
-  private Byte[] photo;
+  private String photo;
 
   // Validation for collections
   @NotEmpty(message = "Steps cannot be empty")

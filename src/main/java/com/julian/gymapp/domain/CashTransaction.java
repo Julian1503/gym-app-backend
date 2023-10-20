@@ -2,6 +2,7 @@ package com.julian.gymapp.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -15,6 +16,8 @@ import java.util.Date;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.LazyCollection;
+import org.hibernate.annotations.LazyCollectionOption;
 
 @Table(name = "cash_transaction")
 @Data
@@ -26,14 +29,14 @@ public class CashTransaction {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long cashTransactionId;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "cash_register_id")
   private CashRegister cashRegister;
 
   @Column(nullable = false)
   private BigDecimal amount;
 
-  @ManyToOne
+  @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "payment_type_id")
   private PaymentType paymentType;
 
@@ -42,6 +45,14 @@ public class CashTransaction {
   private Date transactionDate;
 
   private String description;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "membership_id")
+  private Membership membership;
+
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "member_id")
+  private Member member;
 
   @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
   private boolean isDeleted;

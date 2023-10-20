@@ -22,4 +22,6 @@ public class PlanDto {
 
   @NotNull(message = "Member ID cannot be null")
   private Long memberId;
+
+  private boolean isActive;
 }

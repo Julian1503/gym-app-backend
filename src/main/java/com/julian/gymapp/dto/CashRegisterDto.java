@@ -20,7 +20,6 @@ public class CashRegisterDto {
   @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
   @NotNull(message = "open date can not be null")
   private LocalDate openDate;
-  private List<CashTransactionDto> transactions;
   @DateTimeFormat(iso = ISO.DATE, pattern = "yyyy-MM-dd")
   private LocalDate closeDate;
   private boolean isOpen;

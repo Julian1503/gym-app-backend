@@ -2,14 +2,20 @@ package com.julian.gymapp.controller;
 
 import com.julian.gymapp.controller.request.ExerciseDayPlanRequest;
 import com.julian.gymapp.controller.request.OrderUpdateRequest;
+import com.julian.gymapp.controller.request.SeriesRegisterRequest;
 import com.julian.gymapp.controller.response.BaseResponse;
+import com.julian.gymapp.domain.Exercise;
 import com.julian.gymapp.domain.ExerciseDayPlan;
+import com.julian.gymapp.domain.SeriesRegister;
 import com.julian.gymapp.dto.ExerciseDayPlanDto;
+import com.julian.gymapp.dto.SeriesRegisterDto;
 import com.julian.gymapp.repository.IExerciseDayPlanRepository;
 import com.julian.gymapp.service.interfaces.IBasicCrud;
 import com.julian.gymapp.service.interfaces.ModelConfig;
 import jakarta.validation.Valid;
 import java.sql.Date;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -97,6 +103,8 @@ public class ExerciseDayPlanController extends BaseController {
     ResponseEntity<BaseResponse> baseResponse;
     try {
       ExerciseDayPlan exerciseDayPlan = map(exerciseDayPlanDto);
+      exerciseDayPlan.setDay(java.sql.Date.valueOf(exerciseDayPlanDto.getDay()));
+      exerciseDayPlan.setExercise(new Exercise(exerciseDayPlanDto.getExerciseId()));
       exerciseDayPlanRepository.save(exerciseDayPlan);
       ExerciseDayPlanDto createdExerciseDayPlanDto = convertToDto(exerciseDayPlan);
       baseResponse = createSuccessResponse(createdExerciseDayPlanDto, "ExerciseDayPlan was created successfully");
@@ -117,6 +125,8 @@ public class ExerciseDayPlanController extends BaseController {
     ResponseEntity<BaseResponse> baseResponse;
     try {
       ExerciseDayPlan exerciseDayPlan = map(exerciseDayPlanDto);
+      exerciseDayPlan.setDay(java.sql.Date.valueOf(exerciseDayPlanDto.getDay()));
+      exerciseDayPlan.setExercise(new Exercise(exerciseDayPlanDto.getExerciseId()));
       ExerciseDayPlan updatedExerciseDayPlan = exerciseDayPlanRepository.update(exerciseDayPlan, dayPlanId);
       ExerciseDayPlanDto updatedExerciseDayPlanDto = convertToDto(updatedExerciseDayPlan);
       baseResponse = createSuccessResponse(updatedExerciseDayPlanDto, "ExerciseDayPlan was updated successfully");
@@ -127,9 +137,21 @@ public class ExerciseDayPlanController extends BaseController {
   }
 
   @PutMapping("/finish/{dayPlanId}")
-  public ResponseEntity<BaseResponse> finishExerciseDayPlan(@PathVariable Long dayPlanId) {
+  public ResponseEntity<BaseResponse> finishExerciseDayPlan(@PathVariable Long dayPlanId, @RequestBody List<SeriesRegisterDto> seriesRegistersDto) {
     try {
-      exerciseDayPlanRepository.finishExercise(dayPlanId);
+      List<SeriesRegister> seriesRegisters = seriesRegistersDto.stream().map(s -> mapper.map(s,
+          SeriesRegister.class)).collect(Collectors.toList());
+      exerciseDayPlanRepository.finishExercise(dayPlanId, seriesRegisters);
+    } catch (Exception e) {
+      return createErrorResponse(e.getMessage());
+    }
+    return ResponseEntity.ok().build();
+  }
+
+  @PutMapping("/restart/{dayPlanId}")
+  public ResponseEntity<BaseResponse> restartExerciseDayPlan(@PathVariable Long dayPlanId) {
+    try {
+      exerciseDayPlanRepository.restartExercise(dayPlanId);
     } catch (Exception e) {
       return createErrorResponse(e.getMessage());
     }
@@ -153,7 +175,8 @@ public class ExerciseDayPlanController extends BaseController {
   }
 
   private ExerciseDayPlanDto convertToDto(ExerciseDayPlan exerciseDayPlan) {
-    return mapper.map(exerciseDayPlan, ExerciseDayPlanDto.class);
+     ExerciseDayPlanDto exerciseDayPlanDto = mapper.map(exerciseDayPlan, ExerciseDayPlanDto.class);
+     return exerciseDayPlanDto;
   }
 
   private List<ExerciseDayPlanDto> convertToDto(List<ExerciseDayPlan> exerciseDayPlans) {

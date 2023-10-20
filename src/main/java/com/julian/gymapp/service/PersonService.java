@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public abstract class PersonService {
   @Autowired
   private PersonRepository personRepository;
-  protected void validatePerson(Person entity) {
+  protected void validatePerson(Person entity, boolean isUpdate) {
     if (entity == null) {
       throw new IllegalArgumentException("Member cannot be null");
     }
@@ -34,7 +34,7 @@ public abstract class PersonService {
       if(StringUtils.isBlank(identity)) throw new IllegalArgumentException("Identity cannot be empty");
     }
 
-    if(personRepository.existsByIdentifier(entity.getIdentifier())) {
+    if(!isUpdate && personRepository.existsByIdentifier(entity.getIdentifier())) {
       throw new IllegalArgumentException("Identifier must be unique");
     }
 

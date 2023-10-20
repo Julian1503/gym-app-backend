@@ -7,4 +7,6 @@ public interface IPlanService extends IBasicCrud<Plan, Long>{
   List<Plan> findByMemberId(Long personId);
 
   Plan findActivePlan(Long memberId);
+
+  Plan activatePlan(Long id);
 }

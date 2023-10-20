@@ -83,8 +83,6 @@ public class CashTransactionController extends BaseController {
     ResponseEntity<BaseResponse> baseResponse;
     try {
       CashTransaction cashTransaction = mapper.map(cashTransactionDto, CashTransaction.class);
-      cashTransaction.setCashRegister(new CashRegister(cashTransactionDto.getCashRegisterId()));
-      cashTransaction.setPaymentType(new PaymentType(cashTransactionDto.getPaymentTypeId()));
       CashTransaction savedCashTransaction = cashTransactionRepository.save(cashTransaction);
       baseResponse = createSuccessResponse(convertToDto(savedCashTransaction), "CashTransaction was created successfully");
     } catch (Exception e) {

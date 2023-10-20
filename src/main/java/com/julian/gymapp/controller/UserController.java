@@ -2,13 +2,17 @@ package com.julian.gymapp.controller;
 
 import static com.julian.gymapp.helper.StringHelper.generateRandomString;
 
+import com.fasterxml.jackson.databind.ser.Serializers.Base;
+import com.julian.gymapp.controller.request.UserRequest;
 import com.julian.gymapp.controller.response.BaseResponse;
 import com.julian.gymapp.domain.Member;
 import com.julian.gymapp.domain.Person;
 import com.julian.gymapp.domain.User;
 import com.julian.gymapp.domain.enums.Gender;
 import com.julian.gymapp.domain.enums.IdentifierType;
+import com.julian.gymapp.dto.ChangePasswordDto;
 import com.julian.gymapp.dto.PersonUserDto;
+import com.julian.gymapp.dto.UserDto;
 import com.julian.gymapp.service.interfaces.IBasicCrud;
 import com.julian.gymapp.service.interfaces.IUserService;
 import com.julian.gymapp.service.interfaces.ModelConfig;
@@ -22,7 +26,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -40,13 +46,12 @@ public class UserController extends BaseController {
   }
 
   @PostMapping("/create")
-  
   @Transactional
   public ResponseEntity<BaseResponse> createUser(@Valid @RequestBody PersonUserDto personUserDto) {
     ResponseEntity<BaseResponse> baseResponse;
     try {
       Member member = createMember(personUserDto);
-      User user = createBasicUser(personUserDto);
+      User user = createBasicUser(personUserDto.getEmail(), personUserDto.getPassword(), personUserDto.getUsername());
       Member memberSaved = memberRepository.save(member);
       user.setUser(memberSaved);
       userRepository.createUser(user, List.of("user"));
@@ -57,13 +62,54 @@ public class UserController extends BaseController {
     return baseResponse;
   }
 
-  private User createBasicUser(PersonUserDto personUserDto) {
-    User user = new User();
-    if(!personUserDto.getPassword().isBlank()) {
-      user.setPassword(personUserDto.getPassword());
+  @PostMapping("/create-user")
+  public ResponseEntity<BaseResponse> createUserToMember(@Valid @RequestBody UserRequest userRequest) {
+    ResponseEntity<BaseResponse> baseResponse;
+    try {
+      Member member = memberRepository.findById(userRequest.getMemberId());
+      User user = createBasicUser(userRequest.getEmail(), userRequest.getPassword(), userRequest.getUsername());
+      user.setUser(member);
+      userRepository.createUser(user, userRequest.getRoles());
+      baseResponse = createSuccessResponse(member, "User was created successfully");
+    } catch (Exception e) {
+      baseResponse = createErrorResponse(e.getMessage());
     }
-    user.setEmail(personUserDto.getEmail());
-    user.setUsername(personUserDto.getUsername());
+    return baseResponse;
+  }
+
+  //get all users endpoint
+  @GetMapping("/get-all")
+  public ResponseEntity<BaseResponse> getAllUsers() {
+    ResponseEntity<BaseResponse> baseResponse;
+    try {
+      List<User> users = userRepository.getAllUsers();
+      List<UserDto> usersDto = users.stream().map(user -> mapper.map(user, UserDto.class)).toList();
+      baseResponse = createSuccessResponse(usersDto, "Users were found successfully");
+    } catch (Exception e) {
+      baseResponse = createErrorResponse(e.getMessage());
+    }
+    return baseResponse;
+  }
+
+  @PutMapping("/change-password")
+  public ResponseEntity<BaseResponse> changePassword(@Valid @RequestBody ChangePasswordDto personUserDto) {
+    ResponseEntity<BaseResponse> baseResponse;
+    try {
+      userRepository.changePassword(personUserDto.getNewPassword(), personUserDto.getCurrentPassword(), personUserDto.getUserId());
+      baseResponse = createSuccessResponse(null, "Password was changed successfully");
+    } catch (Exception e) {
+      baseResponse = createErrorResponse(e.getMessage());
+    }
+    return baseResponse;
+  }
+
+  private User createBasicUser(String email, String password, String username) {
+    User user = new User();
+    if(!password.isBlank()) {
+      user.setPassword(password);
+    }
+    user.setEmail(email);
+    user.setUsername(username);
     return user;
   }
 

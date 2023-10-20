@@ -41,6 +41,7 @@ public class ExerciseService implements IBasicCrud<Exercise, Long> {
   @Transactional
   public Exercise save(Exercise entity) {
     validateExercise(entity);
+    entity.setPhoto("https://dlye1hka1kz5z.cloudfront.net/media/blog_images/_Good_Morning_Exercises_to_Help_Loosen_You_Up.jpg");
     return exerciseRepository.save(entity);
   }
 

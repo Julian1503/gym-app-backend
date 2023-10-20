@@ -112,6 +112,18 @@ public class PlanController extends BaseController {
     return baseResponse;
   }
 
+  @PutMapping("/{id}/activate")
+  public ResponseEntity<BaseResponse> activatePlan(@PathVariable Long id) {
+    ResponseEntity<BaseResponse> baseResponse;
+    try {
+      Plan planUpdated = planService.activatePlan(id);
+      baseResponse = createSuccessResponse(convertToDto(planUpdated), "Plan was updated successfully");
+    } catch (Exception e) {
+      baseResponse = createErrorResponse(e.getMessage());
+    }
+    return baseResponse;
+  }
+
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<BaseResponse> deletePlan(@PathVariable Long id) {
     ResponseEntity<BaseResponse> baseResponse;

@@ -30,7 +30,7 @@ public class PersonDto {
   private IdentifierType identifierType;
   @Size(max=15, message = "identifier must be between 0 and 9 characters")
   private String phoneNumber;
-  private Byte[] photo;
+  private String photo;
   @Size(max = 50, message = "street must be between 0 and 50 characters")
   private String street;
   @Size(max = 10, message = "house number must be between 0 and 10 characters")

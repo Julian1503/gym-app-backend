@@ -22,6 +22,6 @@ public interface CashRegisterRepository extends JpaRepository<CashRegister, Long
 
   @Transactional
   @Modifying
-  @Query(value = "UPDATE CashRegister c SET c.isOpen = false WHERE c.isOpen = true")
+  @Query(value = "UPDATE CashRegister c SET c.isOpen = false, c.closeDate = CURRENT_DATE WHERE c.isOpen = true")
   void closeCashRegisters();
 }

@@ -31,7 +31,8 @@ public class TrainerService extends PersonService implements IBasicCrud<Trainer,
 
   @Override
   public Trainer save(Trainer entity) {
-    validateTrainer(entity);
+    validateTrainer(entity, false);
+    entity.setPhoto("https://fhinstitute.com/wp-content/uploads/2022/01/MASTER-TRAINER.jpg");
     return trainerRepository.save(entity);
   }
 
@@ -46,7 +47,7 @@ public class TrainerService extends PersonService implements IBasicCrud<Trainer,
         TRAINER_NOT_FOUND));
     update(entity, trainer);
     trainer.setSpecialties(entity.getSpecialties());
-    validateTrainer(trainer);
+    validateTrainer(trainer, true);
     return trainerRepository.save(trainer);
   }
 
@@ -62,14 +63,14 @@ public class TrainerService extends PersonService implements IBasicCrud<Trainer,
     }
   }
 
-  private void validateTrainer(Trainer entity) {
-    validatePerson(entity);
+  private void validateTrainer(Trainer entity, boolean isUpdate) {
+    validatePerson(entity, isUpdate);
 
     if (StringUtils.isBlank(entity.getTrainerNumber())) {
       throw new IllegalArgumentException("trainer number cannot be blank");
     }
 
-    if(trainerRepository.existsByTrainerNumber(entity.getTrainerNumber()) && entity.getPersonId() == null) {
+    if(!isUpdate && trainerRepository.existsByTrainerNumber(entity.getTrainerNumber()) && entity.getPersonId() == null) {
       throw new IllegalArgumentException("trainer number must be unique");
     }
 

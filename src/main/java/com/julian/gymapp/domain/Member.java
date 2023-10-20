@@ -35,11 +35,4 @@ public class Member extends Person {
   private String emergencyContactName;
   @Column(name="emergency_contact_phone", length = 15)
   private String emergencyContactPhone;
-
-  @OneToMany(fetch = FetchType.LAZY)
-  @JoinTable(name = "membership_subscription",
-      joinColumns = @JoinColumn(name = "member_id"),
-      inverseJoinColumns = @JoinColumn(name = "membership_subscription_id"))
-  @JsonIgnore
-  private List<MembershipSubscription> membershipSubscriptions;
 }

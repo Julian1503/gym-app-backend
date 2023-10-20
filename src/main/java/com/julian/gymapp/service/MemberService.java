@@ -36,7 +36,7 @@ public class MemberService extends PersonService implements IBasicCrud<Member, L
   public Member save(Member entity) {
     entity.setMemberNumber("MB-" + generateRandomString());
     entity.setJoinDate(new Date());
-    validateMember(entity);
+    validateMember(entity, false);
     return memberRepository.save(entity);
   }
 
@@ -46,14 +46,14 @@ public class MemberService extends PersonService implements IBasicCrud<Member, L
     member.setEmergencyContactName(entity.getEmergencyContactName());
     member.setEmergencyContactPhone(entity.getEmergencyContactPhone());
     update(entity, member);
-    validateMember(member);
+    validateMember(member, true);
     return memberRepository.save(member);
   }
 
-  protected void validateMember(Member entity) {
-    validatePerson(entity);
+  protected void validateMember(Member entity, boolean isUpdate) {
+    validatePerson(entity, isUpdate);
 
-    if(memberRepository.existsByMemberNumber(entity.getMemberNumber()) && entity.getPersonId() == null) {
+    if(!isUpdate && memberRepository.existsByMemberNumber(entity.getMemberNumber()) && entity.getPersonId() == null) {
       throw new IllegalArgumentException("member number must be unique");
     }
 

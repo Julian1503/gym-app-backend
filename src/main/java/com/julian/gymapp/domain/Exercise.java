@@ -16,7 +16,6 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
-import java.util.List;
 import java.util.Set;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -43,7 +42,7 @@ public class Exercise {
   @Column(name="difficulty_level", nullable = false, precision = 3)
   private Short difficultyLevel;
   @Column(name="photo")
-  private Byte[] photo;
+  private String photo;
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name="exercise_id")
   private Set<Step> steps;
@@ -69,4 +68,8 @@ public class Exercise {
   @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
   @JoinColumn(name="exercise_id")
   private Set<ExerciseDayPlan> dayPlans;
+
+  public Exercise(Long exerciseId) {
+    this.exerciseId = exerciseId;
+  }
 }

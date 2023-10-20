@@ -6,6 +6,7 @@ import com.julian.gymapp.service.interfaces.ICashRegisterService;
 import com.julian.gymapp.service.interfaces.ModelConfig;
 import jakarta.persistence.EntityNotFoundException;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import org.modelmapper.ModelMapper;
@@ -35,6 +36,14 @@ public class CashRegisterService implements ICashRegisterService {
   }
 
   @Override
+  public CashRegister closeCashRegister(Long id) {
+    CashRegister cashRegister = cashRegisterRepository.findByCashRegisterIdAndIsDeletedFalse(id).orElseThrow(() -> new EntityNotFoundException("CashRegister was not found"));
+    cashRegister.setCloseDate(new Date());
+    cashRegister.setOpen(false);
+    return cashRegisterRepository.save(cashRegister);
+  }
+
+  @Override
   public CashRegister findById(Long id) {
     Optional<CashRegister> dayPlan = cashRegisterRepository.findByCashRegisterIdAndIsDeletedFalse(id);
     return dayPlan.orElse(null);
@@ -54,7 +63,6 @@ public class CashRegisterService implements ICashRegisterService {
     validateCashRegister(cashRegister);
     cashRegister.setInitialBalance(entity.getInitialBalance());
     cashRegister.setCurrentBalance(entity.getCurrentBalance());
-    cashRegister.setTransactions(entity.getTransactions());
     return cashRegisterRepository.save(cashRegister);
   }
 

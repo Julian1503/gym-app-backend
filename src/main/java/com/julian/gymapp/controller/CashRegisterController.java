@@ -76,6 +76,23 @@ public class CashRegisterController extends BaseController {
     return baseResponse;
   }
 
+
+  @PutMapping("/close/{id}")
+  public ResponseEntity<BaseResponse> closeCashRegister(@PathVariable Long id) {
+    ResponseEntity<BaseResponse> baseResponse;
+    try {
+      CashRegister cashRegister = cashRegisterRepository.closeCashRegister(id);
+      if (cashRegister == null) {
+        baseResponse = createErrorResponse("CashRegister was not found");
+      } else {
+        baseResponse = createSuccessResponse(convertToDto(cashRegister), "CashRegister returned successfully");
+      }
+    } catch (Exception e) {
+      baseResponse = createErrorResponse(e.getMessage());
+    }
+    return baseResponse;
+  }
+
   @PostMapping("/create")
   public ResponseEntity<BaseResponse> createCashRegister(@Valid @RequestBody CashRegisterDto cashRegisterDto) {
     ResponseEntity<BaseResponse> baseResponse;

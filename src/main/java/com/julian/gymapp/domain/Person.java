@@ -54,7 +54,7 @@ public class Person {
   @Column(name="finger_print_data")
   private Byte[] fingerPrintData;
   @Column(name="photo")
-  private Byte[] photo;
+  private String photo;
   @Column(name="street", length = 50)
   private String street;
   @Column(name="house_number", length = 10)

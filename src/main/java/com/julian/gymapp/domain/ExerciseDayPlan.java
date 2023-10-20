@@ -30,18 +30,10 @@ public class ExerciseDayPlan {
   private Long exercisesDayPlanId;
   @Column(name="exercise_order", nullable = false, precision = 2)
   private Short order;
-  @Column(name="duration", nullable = false)
-  private Time duration;
-  @Column(name="repetitions", nullable = false, precision = 2)
-  private Short repetitions;
-  @Column(name="series", nullable = false, precision = 2)
-  private Short series;
   @Column(name="warmup", nullable = false, columnDefinition = "boolean default false")
   private boolean warmup;
   @Column(name="finished", nullable = false, columnDefinition = "boolean default false")
   private boolean isFinished;
-  @Column(name="weight")
-  private Double weight;
   @Column(name="plan_id")
   private Long planId;
   @Column(name="day")

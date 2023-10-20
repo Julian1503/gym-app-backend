@@ -26,16 +26,6 @@ public class PaymentType {
   @Column(nullable = false)
   private String name;
 
-  @OneToMany(mappedBy = "paymentType")
-  private List<Payment> payments;
-
-  @OneToMany(mappedBy = "paymentType")
-  private List<CashTransaction> cashTransactions;
-
   @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
   private boolean isDeleted;
-
-  public PaymentType(Long paymentTypeId) {
-    this.paymentTypeId = paymentTypeId;
-  }
 }
