@@ -1,10 +1,14 @@
 package com.julian.gymapp.controller;
 
+import com.julian.gymapp.controller.response.BaseResponse;
+import com.julian.gymapp.dto.AuthDto;
 import com.julian.gymapp.model.LoginRequest;
-import com.julian.gymapp.service.ISecurityService;
+import com.julian.gymapp.service.interfaces.ISecurityService;
 import java.util.Map;
 import java.util.function.Consumer;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -21,15 +25,21 @@ public class LoginController {
 
   private final ISecurityService securityService;
   private final AuthenticationManager authorizationManager;
-  @PostMapping("/login")
-  public String token(@RequestBody LoginRequest loginRequest) {
+  @PostMapping("")
+  public ResponseEntity<BaseResponse> token(@RequestBody LoginRequest loginRequest) {
+    BaseResponse baseResponse = new BaseResponse();
     try {
       Authentication authentication = authorizationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password()));
       Consumer<Map<String, Object>> claims = securityService.getClaims();
       SecurityContextHolder.getContext().setAuthentication(authentication);
-      return securityService.generateToken(authentication, claims);
-    } catch(Exception e) {
-      return e.getMessage();
+      AuthDto authDto = new AuthDto(securityService.generateToken(authentication, claims), loginRequest.username());
+      baseResponse.setResponse(authDto);
+      baseResponse.setMessage("Authenticated successfully");
+    } catch (Exception e) {
+      baseResponse.setStatus(HttpStatus.BAD_REQUEST.value());
+      baseResponse.setSuccess(false);
+      baseResponse.setMessage(e.getLocalizedMessage());
     }
+    return new ResponseEntity<>(baseResponse, HttpStatus.OK);
   }
 }

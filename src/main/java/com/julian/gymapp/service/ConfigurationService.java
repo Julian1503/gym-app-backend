@@ -4,6 +4,7 @@ import com.julian.gymapp.domain.Configuration;
 import com.julian.gymapp.domain.User;
 import com.julian.gymapp.dto.ConfigurationDto;
 import com.julian.gymapp.repository.ConfigurationRepository;
+import com.julian.gymapp.service.interfaces.IConfigurationService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.jpa.repository.Modifying;

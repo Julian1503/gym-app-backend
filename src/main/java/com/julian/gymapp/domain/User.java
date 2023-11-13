@@ -9,10 +9,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,10 +36,8 @@ public class User {
   private String password;
   @Column(name = "email", nullable = false)
   private String email;
-  @Column(name = "name", nullable = false)
-  private String name;
-  @Column(name = "surname", nullable = false)
-  private String surname;
+  @Column(name = "is_deleted", nullable = false, columnDefinition = "boolean default false")
+  private boolean isDeleted;
   public void setPassword(String password) {
     this.password = SpringCrypto.encrypt(password);
   }
@@ -51,6 +50,9 @@ public class User {
   @ManyToMany
   @JoinTable(name="user_role", joinColumns = @JoinColumn(name="user_id"), inverseJoinColumns = @JoinColumn(name="role_id"))
   private List<Role> roles;
+  @OneToOne
+  @JoinColumn(name = "person_id", referencedColumnName = "person_id")
+  private Person user;
 
   public User(String username, List<Role> roles) {
     this.username = username;

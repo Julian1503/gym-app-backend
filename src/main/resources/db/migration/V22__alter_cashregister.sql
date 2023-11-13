@@ -1,0 +1,1 @@
+ALTER TABLE cash_register ADD COLUMN open_date DATE;

@@ -1,7 +1,7 @@
 package com.julian.gymapp.exception;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.julian.gymapp.error.ErrorBase;
+import com.julian.gymapp.exception.error.ErrorBase;
 import java.io.IOException;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.web.AuthenticationEntryPoint;

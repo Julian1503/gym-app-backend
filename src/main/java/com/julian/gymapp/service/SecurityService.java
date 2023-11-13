@@ -11,6 +11,7 @@ import com.julian.gymapp.domain.Role;
 import com.julian.gymapp.domain.User;
 import com.julian.gymapp.model.JwtUser;
 import com.julian.gymapp.repository.UserRepository;
+import com.julian.gymapp.service.interfaces.ISecurityService;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -49,6 +50,7 @@ public class SecurityService implements ISecurityService, UserDetailsService {
   @Override
   public String generateToken(Authentication authentication, Consumer<Map<String, Object>> claims) {
     Instant now = Instant.now();
+    User user = getUser(authentication);
     JwtClaimsSet claimsJwt = JwtClaimsSet.builder()
         .issuer("self")
         .issuedAt(now)
@@ -56,10 +58,22 @@ public class SecurityService implements ISecurityService, UserDetailsService {
         .subject(authentication.getName())
         .claim("scope", authentication.getAuthorities().stream()
             .map(GrantedAuthority::getAuthority).toList())
-        .claim("email", authentication.getName())
+        .claim("email", user.getEmail())
+        .claim("scid", user.getUser() != null ? user.getUser().getPersonId() : "")
+        .claim("user", user.getUser() != null ? user.getUserId() : "")
+        .claim("fullName", user.getUser() != null ? user.getUser().getName() +" "+ user.getUser().getLastName() : "")
         .claims(claims)
         .build();
     return this.encoder.encode(JwtEncoderParameters.from(claimsJwt)).getTokenValue();
+  }
+
+  private User getUser(Authentication authentication) {
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    User user = userRepository.findByUsername(userDetails.getUsername()).orElse(null);
+    if (user != null) {
+      return user;
+    }
+    return null;
   }
 
   @Override

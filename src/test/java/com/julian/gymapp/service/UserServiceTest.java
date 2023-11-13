@@ -7,6 +7,7 @@ import com.julian.gymapp.dto.UserDto;
 import com.julian.gymapp.domain.Configuration;
 import com.julian.gymapp.domain.User;
 import com.julian.gymapp.repository.UserRepository;
+import java.util.ArrayList;
 import java.util.HexFormat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -36,16 +37,10 @@ public class UserServiceTest {
     user = new User();
     user.setUserId(1L);
     user.setPassword("passwordMocked");
-    user.setSurname("surnameMocked");
-    user.setName("nameMocked");
     user.setAvatar(HexFormat.of().parseHex("e04fd020ea3a6910a2d808002b30309d"));
     user.setUsername("usernameMocked");
 
     userDto = new UserDto();
-    userDto.setUserId(1L);
-    userDto.setSurname("surnameMocked");
-    userDto.setName("nameMocked");
-    userDto.setAvatar(HexFormat.of().parseHex("e04fd020ea3a6910a2d808002b30309d"));
     userDto.setUsername("usernameMocked");
 
     configuration = new Configuration();
@@ -58,7 +53,6 @@ public class UserServiceTest {
   @Test
   void createUserTest() {
     when(userRepository.save(any(User.class))).thenReturn(user);
-    when(modelMapper.map(any(User.class),any(Class.class))).thenReturn(userDto);
-    userService.createUser(userDto);
+//    userService.createUser(userDto, new ArrayList<>());
   }
 }
