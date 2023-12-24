@@ -2,12 +2,11 @@ version: 2
 
 jobs:
   build:
-    docker:
-      - image: openjdk:17-oracle
-
+   machine:
+    image: ubuntu-2204:2022.04.2
     steps:
       - checkout
-
+      - run: echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
       - run:
           name: Build Docker Image
           command: docker build -t gym-app .
