@@ -21,27 +21,29 @@ jobs:
             sudo systemctl enable docker
             sudo systemctl start docker
       - run:
-          name: Build Docker Image
-          command: docker build -t gym-app .
-
-      - run:
-          name: Save Docker Image to Tar
-          command: docker save gym-app -o gym-app.tar
-
-      - run:
-          name: Deploy to AWS EC2
-          command: scp -i ~/.ssh/aws-key.pem gym-app.tar ec2-user@34.201.108.53:/home/ec2-user
-
-      - run:
-          name: SSH into AWS EC2 and Update Docker Container
+          name: Setup JAVA
           command: |
-            ssh -i ~/.ssh/aws-key.pem ec2-user@34.201.108.53 << 'EOF'
-              sudo docker stop gym-app-1 || true
-              sudo docker rm gym-app-1 || true
-              sudo docker rmi gym-app || true
-              sudo docker load -i /home/ec2-user/gym-app.tar
-              sudo docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 gym-app
-            EOF
+              sudo apt-get update
+              sudo apt-get install -y openjdk-17-jdk
+      - run:
+          name: Install Maven
+          command: |
+              sudo apt-get update
+              sudo apt-get install -y maven
+      - run:
+          name: Build Project
+          command: mvn clean install -DskipTests
+      - run:
+          name: Login to Docker Hub
+          command: |
+              echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - run:
+          name: Build Docker Image
+          command: docker build -t juliandedward/gym-app .
+
+      - run:
+          name: Publish Docker Image
+          command: docker push juliandedward/gym-app:latest
 
 workflows:
   version: 2
