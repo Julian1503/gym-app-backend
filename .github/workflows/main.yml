@@ -1,0 +1,45 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: [ubuntu-latest]
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Setup JAVA
+        run: actions/setup-java@v3
+        with:
+          java-version: 17
+          distribution: 'temurin'
+      - name: Build Project
+        run: mvn clean install -DskipTests
+      - name: Login to Docker Hub
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - name: Build Docker Image
+        run: docker build -t juliandedward/gym-app .
+      - name: Publish Docker Image
+        run: docker push juliandedward/gym-app:latest
+  deploy:
+    needs: build
+    runs-on: [aws-ec2]
+    steps:
+      - name: Login to Docker Hub
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - name: Pull Docker Image
+        run: docker pull juliandedward/gym-app:latest
+      - name: Delete old containers
+        run: |
+          docker stop gym-app-1 || true
+          docker rm gym-app-1 || true
+          docker rmi gym-app || true
+      - name: Docker prune
+        run: docker system prune -f
+      - name: Docker Run
+        run: docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 juliandedward/gym-app:latest
