@@ -31,7 +31,7 @@ jobs:
     steps:
       - name: Login to Docker Hub
         run: |
-          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+          echo "$DOCKER_PASSWORD" | docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Pull Docker Image
         run: docker pull juliandedward/gym-app:latest
       - name: Delete old containers
