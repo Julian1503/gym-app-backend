@@ -1,0 +1,41 @@
+version: 2.1
+
+jobs:
+  build:
+    docker:
+      - image: circleci/openjdk:8-jdk
+
+    steps:
+      - checkout
+
+      - run:
+          name: Build Docker Image
+          command: docker build -t gym-app .
+
+      - run:
+          name: Save Docker Image to Tar
+          command: docker save gym-app -o gym-app.tar
+
+      - run:
+          name: Deploy to AWS EC2
+          command: scp -i ~/.ssh/aws-key.pem gym-app.tar ec2-user@34.201.108.53:/home/ec2-user
+
+      - run:
+          name: SSH into AWS EC2 and Update Docker Container
+          command: |
+            ssh -i ~/.ssh/aws-key.pem ec2-user@34.201.108.53 << 'EOF'
+              sudo docker stop gym-app-1 || true
+              sudo docker rm gym-app-1 || true
+              sudo docker rmi gym-app || true
+              sudo docker load -i /home/ec2-user/gym-app.tar
+              sudo docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 gym-app
+            EOF
+
+workflows:
+  version: 2
+  build-and-deploy:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
