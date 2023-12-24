@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: circleci/openjdk:8-jdk
+      - image: circleci/openjdk:17-jdk
 
     steps:
       - checkout
@@ -38,4 +38,4 @@ workflows:
       - build:
           filters:
             branches:
-              only: master
+              only: main
