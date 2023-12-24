@@ -29,14 +29,17 @@ jobs:
     needs: build
     runs-on: [aws-ec2]
     steps:
+      - name: Login to Docker Hub
+        run: |
+          echo "$DOCKER_PASSWORD" | sudo docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
       - name: Pull Docker Image
-        run: docker pull juliandedward/gym-app:latest
+        run:  sudo docker pull juliandedward/gym-app:latest
       - name: Delete old containers
         run: |
-          docker stop gym-app-1 || true
-          docker rm gym-app-1 || true
-          docker rmi gym-app || true
+          sudo docker stop gym-app-1 || true
+          sudo docker rm gym-app-1 || true
+          sudo docker rmi gym-app || true
       - name: Docker prune
-        run: docker system prune -f
+        run: sudo docker system prune -f
       - name: Docker Run
-        run: docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 juliandedward/gym-app:latest
+        run: sudo docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 juliandedward/gym-app:latest
