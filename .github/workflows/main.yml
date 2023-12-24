@@ -36,10 +36,10 @@ jobs:
         run:  sudo docker pull juliandedward/gym-app:latest
       - name: Delete old containers
         run: |
-          sudo docker stop gym-app-1 || true
-          sudo docker rm gym-app-1 || true
+          sudo docker stop gym-app-0 || true
+          sudo docker rm gym-app-0 || true
           sudo docker rmi gym-app || true
       - name: Docker Run
-        run: sudo docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-1 juliandedward/gym-app:latest
+        run: sudo docker run -d -p 8080:8080 -v /home/ec2-user/dev/app:/app/dev/app --name gym-app-0 juliandedward/gym-app:latest
       - name: Docker prune
         run: sudo docker system prune -f
