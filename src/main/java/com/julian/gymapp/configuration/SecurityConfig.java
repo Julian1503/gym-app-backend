@@ -69,10 +69,10 @@ public class SecurityConfig {
   @Bean
   public CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+    configuration.setAllowedOrigins(Arrays.asList("https://gymansiumapp.netlify.app/"));
     configuration.setAllowedMethods(Arrays.asList("GET","POST","OPTIONS","DELETE","PUT","PATCH"));
     configuration.setAllowCredentials(true);
-    configuration.addAllowedOrigin("http://localhost:3000");
+    configuration.addAllowedOrigin("https://gymansiumapp.netlify.app/");
     configuration.addAllowedHeader("*");
     configuration.addAllowedMethod("*");
 
