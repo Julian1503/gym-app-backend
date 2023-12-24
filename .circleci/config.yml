@@ -2,8 +2,8 @@ version: 2
 
 jobs:
   build:
-   machine:
-    image: ubuntu-2204:2022.04.2
+    docker:
+      - image: openjdk:17-oracle
     steps:
       - checkout
       - run:
@@ -20,11 +20,6 @@ jobs:
             sudo usermod -aG docker ubuntu
             sudo systemctl enable docker
             sudo systemctl start docker
-      - run:
-          name: Install Java
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y openjdk-17-jdk
       - run:
           name: Build Docker Image
           command: docker build -t gym-app .
