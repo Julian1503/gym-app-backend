@@ -3,7 +3,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: openjdk:17-oracle
+      - image: ubuntu:latest
     steps:
       - checkout
       - run:
