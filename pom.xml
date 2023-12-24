@@ -9,9 +9,9 @@
 		<relativePath/>
 	</parent>
 	<groupId>com.julian</groupId>
-	<artifactId>scheduler</artifactId>
+	<artifactId>gym-app</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>scheduler</name>
+	<name>gym-app</name>
 	<packaging>jar</packaging>
 	<properties>
 		<java.version>17</java.version>
