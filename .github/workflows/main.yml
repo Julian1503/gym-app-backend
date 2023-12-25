@@ -32,7 +32,22 @@ jobs:
       - name: Checkout Postgresql
         run: |
           sudo docker ps | grep postgresql || sudo docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} --name postgresql postgres:latest
-          sudo docker exec -it postgresql psql -U postgres -c "CREATE DATABASE gymapp;"
+      - name: Check if DB exists
+        id: check_db
+        run: |
+          EXISTS=$(sudo docker exec -i postgresql psql -U postgres -tAc "SELECT 1 FROM pg_database WHERE datname='gymdb'")
+          if [ -z "$EXISTS" ]; then
+            echo "DB does not exist"
+            echo "::set-output name=db_exists::false"
+          else
+            echo "DB already exists"
+            echo "::set-output name=db_exists::true"
+          fi
+
+      - name: Run create DB
+        if: steps.check_db.outputs.db_exists == 'false'
+        run: | 
+          sudo docker exec -i postgresql psql -U postgres -c "CREATE DATABASE gymdb;"
       - name: Login to Docker Hub
         run: |
           echo "$DOCKER_PASSWORD" | sudo docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
