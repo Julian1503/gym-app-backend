@@ -29,6 +29,10 @@ jobs:
     needs: build
     runs-on: [aws-ec2]
     steps:
+      - name: Checkout Postgresql
+        run: |
+          sudo docker ps | grep postgresql || sudo docker run -d -p 5432:5432 -e POSTGRES_PASSWORD=${{secrets.POSTGRES_PASSWORD}} --name postgresql postgres:latest
+          sudo docker exec -it postgresql psql -U postgres -c "CREATE DATABASE gymapp;"
       - name: Login to Docker Hub
         run: |
           echo "$DOCKER_PASSWORD" | sudo docker login -u ${{secrets.DOCKER_USER}} -p ${{secrets.DOCKER_PASSWORD}}
